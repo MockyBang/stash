@@ -36,11 +36,22 @@
                         .map((status) => (status.isTop ? { ...status, label: "置顶" } : status));
                     const sinceId = data.cardlistInfo ? data.cardlistInfo.since_id : "";
                     const body = JSON.stringify({ statuses, since_id: sinceId, total_number: 100 });
-                    $done({ body });
+                    $done({ response: { body } });
                 } else {
                     console.log("[VVebo] 新接口请求失败，状态码: " + response.status);
                     $done({});
                 }
+            } else if (url.includes("profile/statuses/tab")) {
+                const data = JSON.parse($response.body);
+                const statuses = data.cards
+                    .map((card) => (card.card_group ? card.card_group : card))
+                    .flat()
+                    .filter((card) => card.card_type === 9)
+                    .map((card) => card.mblog)
+                    .map((status) => (status.isTop ? { ...status, label: "置顶" } : status));
+                const sinceId = data.cardlistInfo.since_id;
+                const body = JSON.stringify({ statuses, since_id: sinceId, total_number: 100 });
+                $done({ body });
             } else {
                 $done({});
             }
