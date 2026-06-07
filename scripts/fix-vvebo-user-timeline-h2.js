@@ -77,29 +77,6 @@
                         $done({});
                     }
                 }
-            } else if (url.includes("profile/statuses/tab")) {
-                console.log("[VVebo] 进入 profile/statuses/tab 分支（响应处理）");
-                try {
-                    const data = JSON.parse($response.body);
-                    const originalCardsCount = data.cards ? data.cards.length : 0;
-                    console.log(`[VVebo] 原始卡片数: ${originalCardsCount}`);
-
-                    const statuses = data.cards
-                        .map((card) => (card.card_group ? card.card_group : card))
-                        .flat()
-                        .filter((card) => card.card_type === 9)
-                        .map((card) => card.mblog)
-                        .map((status) => (status.isTop ? { ...status, label: "置顶" } : status));
-                    const sinceId = data.cardlistInfo ? data.cardlistInfo.since_id : "";
-                    console.log(`[VVebo] 过滤后博文数: ${statuses.length}, since_id: ${sinceId}`);
-
-                    const body = JSON.stringify({ statuses, since_id: sinceId, total_number: 100 });
-                    console.log("[VVebo] 修改响应体并返回");
-                    $done({ body });
-                } catch (err) {
-                    console.log(`[VVebo] 解析 profile/statuses/tab 响应失败: ${err.message}`);
-                    $done({});
-                }
             } else {
                 console.log("[VVebo] 未匹配任何分支，直接放行");
                 $done({});
